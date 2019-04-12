@@ -1,6 +1,6 @@
 #include "book.h"
 
-Book::Book(int id = 0, string bookName = "", string auth = "", string cat = "") 
+Book::Book(int id, string bookName, string auth, string cat)
 {
 	title = bookName;
 	author = auth;
@@ -8,7 +8,7 @@ Book::Book(int id = 0, string bookName = "", string auth = "", string cat = "")
 	bookID = id;
 }
 
-string Book::getTitle() 
+string Book::getTitle()
 {
 	return title;
 }
@@ -23,16 +23,16 @@ string Book::getCategory()
 	return category;
 }
 
-int Book::getId() 
+int Book::getId()
 {
 	return bookID;
 }
-void Book::setPersonPtr(Person * ptr) 
+void Book::setPersonPtr(Person * ptr)
 {
-
+	personPtr = ptr;
 } // complete
 
 Person * Book::getPersonPtr()
 {
-	return nullptr; // complete
+	return personPtr; // complete
 }
