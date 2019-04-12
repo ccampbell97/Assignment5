@@ -23,7 +23,7 @@ void printMenu() {
 }
 
 //You are not obligated to use these function declarations - they're just given as examples
-void readBooks(vector<Book *> & myBooks) 
+void readBooks(vector<Book *> & myBooks)
 {
 	int id;
 	string title, author, category;
@@ -31,19 +31,45 @@ void readBooks(vector<Book *> & myBooks)
 	bookFile.open("books.txt");
 	while (bookFile)
 	{
+		if(bookFile.eof() == true)
+			return;
 		bookFile >> id;
-		bookFile >> title;
-		bookFile >> author;
-		bookFile >> category;
-		//myBooks.emplace_back(id, title, author, category);
+		//cout << id << endl;
+		getline(bookFile, title); //used to get rid of the new line after the id line
+		getline(bookFile, title);
+		//cout << title << endl;
+		getline(bookFile, author);
+		//cout << author << endl;
+		getline(bookFile, category);
+		//cout << category << endl;
+		myBooks.push_back(new Book(id, title, author, category));
 	}
 	return;
 }
-/*
-int readPersons(vector<Person *> & myCardholders) {
+
+int readPersons(vector<Person *> & myCardholders)
+{
+	int cardNo, act;
+	string fName, lName;
+	ifstream personFile;
+	personFile.open("person.txt");
+	while (personFile)
+	{
+		if (personFile.eof() == true)
+			return 0;
+		personFile >> cardNo;
+		//cout << id << endl;
+		personFile >> act;
+		//cout << active << endl;
+		personFile >> fName;
+		//cout << fName << endl;
+		personFile >> lName;
+		//cout << lName << endl;
+		myCardholders.push_back(new Person(cardNo, act, fName, lName));
+	}
 	return 0;
 }
-
+/*
 void readRentals(vector<Book *> & myBooks, vector<Person *> myCardholders) {
 	return;
 }
@@ -60,14 +86,16 @@ Book * searchBook(vector<Book *> myBooks, int id) {
 int main()
 {
 	vector<Book *> books;
-	//vector<Person *> cardholders;
-	int id;
+	vector<Person *> cardholders;
+	int cardID, bookID, i, j;
 	readBooks(books);
+	//cout << books[0]->getId() << endl;
+	readPersons(cardholders);
 
 	int choice;
 	do
 	{
-		// If you use cin anywhere, don't forget that you have to handle the <ENTER> key that 
+		// If you use cin anywhere, don't forget that you have to handle the <ENTER> key that
 		// the user pressed when entering a menu option. This is still in the input stream.
 		printMenu();
 		cin >> choice;
@@ -75,9 +103,32 @@ int main()
 		{
 		case 1:
 			cout << "Please enter the card ID: ";
-			cin >> id;
-			//cout << books[0]->getId();
-			// Book checkout
+			cin >> cardID;
+			for (i = 0; i < cardholders.size(); i++)
+			{
+				if(cardholders[i]->getId() == cardID)
+				{
+					cout << "Cardholder: " << cardholders[i]->getFirstName() << " " << cardholders[i]->getLastName() << endl;
+					cout << "Please enter the book ID: ";
+					cin >> bookID;
+					for (j = 0; j < books.size(); j++)
+					{
+						if(books[j]->getId() == bookID)
+						{
+							cout << "Title: " << books[j]->getTitle() << endl;
+							if(books[j]->getPersonPtr() == false)
+								books[j]->setPersonPtr(cardholders[i]);
+							cout << "Rental Complete" << endl;
+							break;
+						}
+					}
+					if(j == books.size())
+						cout << "Book ID not found" << endl;
+					break;
+				}
+			}
+			if(i == cardholders.size())
+				cout << "Card ID not found" << endl;
 			break;
 
 		case 2:
