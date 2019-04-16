@@ -25,12 +25,12 @@ int Person::getId()
 
 void Person::setActive(bool act)
 {
-
-} // complete
+	active = act;
+}
 
 bool Person::isActive()
 {
-	return true; // complete
+	return active;
 }
 
 string Person::fullName()

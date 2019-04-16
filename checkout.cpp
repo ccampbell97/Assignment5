@@ -89,6 +89,7 @@ int main()
 	vector<Person *> cardholders;
 	int cardID, bookID, i, j;
 	bool outRentals = false;
+	string cardholder;
 	readBooks(books);
 	//cout << books[0]->getId() << endl;
 	readPersons(cardholders);
@@ -190,7 +191,29 @@ int main()
 			break;
 
 		case 5:
-			// View outstanding rentals for a cardholder
+			cout << "Please enter the card ID: ";
+			cin >> cardholder;
+			for (j = 0; j < cardholders.size(); j++)
+			{
+				if(cardholders->getId() == cardholder)
+					cout << "Cardholder: " << cardholders->fullName() << endl << endl;
+			}
+			for(i = 0; i < books.size(); i++)
+			{
+				if(books[i]->getPersonPtr() != 0)
+				{
+					if(books[i]->getPersonPtr()->getId() == cardholder)
+					{
+						cout << "Book ID: " << books[i]->getId() << endl;
+						cout << "Title: " << books[i]->getTitle() << endl;
+						cout << "Author: " << books[i]->getAuthor() << endl << endl;
+						outRentals = true;
+					}
+				}
+			}
+			if (outRentals == false)
+				cout << "No books currently checked out" << endl;
+			outRentals = false;
 			break;
 
 		case 6:
