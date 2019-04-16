@@ -88,6 +88,7 @@ int main()
 	vector<Book *> books;
 	vector<Person *> cardholders;
 	int cardID, bookID, i, j;
+	bool outRentals = false;
 	readBooks(books);
 	//cout << books[0]->getId() << endl;
 	readPersons(cardholders);
@@ -116,9 +117,13 @@ int main()
 						if(books[j]->getId() == bookID)
 						{
 							cout << "Title: " << books[j]->getTitle() << endl;
-							if(books[j]->getPersonPtr() == false)
+							if(books[j]->getPersonPtr() == 0)
+							{
 								books[j]->setPersonPtr(cardholders[i]);
-							cout << "Rental Complete" << endl;
+								cout << "Rental Complete" << endl;
+							}
+							else
+								cout << "Book already checked out" << endl;
 							break;
 						}
 					}
@@ -132,15 +137,56 @@ int main()
 			break;
 
 		case 2:
-			// Book return
+			cout << "Please enter the book ID to return: ";
+			cin >> bookID;
+			for(i = 0; i < books.size(); i++)
+			{
+				if(bookID == books[i]->getId())
+				{
+					cout << "Title: " << books[i]->getTitle();
+					cout << "Return Completed" << endl;
+					books[i]->setPersonPtr(nullptr);
+					break;
+				}
+				else
+					cout << "Book ID not found" << endl;
+			}
 			break;
 
 		case 3:
-			// View all available books
+			for(i = 0; i < books.size(); i++)
+			{
+				if(books[i]->getPersonPtr() == 0)
+				{
+					cout << "Book ID: " << books[i]->getId() << endl;
+					cout << "Title: " << books[i]->getTitle() << endl;
+					cout << "Author: " << books[i]->getAuthor() << endl;
+					cout << "Category: " << books[i]->getCategory() << endl << endl;
+					outRentals = true;
+				}
+			}
+			if (outRentals == false)
+				cout << "No outstanding rentals" << endl;
+			outRentals = false;
 			break;
 
 		case 4:
-			// View all outstanding rentals
+			for(i = 0; i < books.size(); i++)
+			{
+				if(books[i]->getPersonPtr() != 0)
+				{
+					cout << "Book ID: " << books[i]->getId() << endl;
+					cout << "Title: " << books[i]->getTitle() << endl;
+					cout << "Author: " << books[i]->getAuthor() << endl;
+					cout << "Category: " << books[i]->getCategory() << endl;
+					cout << "Cardholder: " << books[i]->getPersonPtr()->fullName() << endl;
+					cout << "Card ID: " << books[i]->getPersonPtr()->getId() << endl << endl;
+					outRentals = true;
+				}
+			}
+			if (outRentals == false)
+				cout << "No outstanding rentals" << endl;
+			outRentals = false;
 			break;
 
 		case 5:
