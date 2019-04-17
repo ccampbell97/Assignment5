@@ -1,4 +1,4 @@
-// Name
+// Collin Campbell
 // Section #
 #include <iostream>
 #include <fstream>
