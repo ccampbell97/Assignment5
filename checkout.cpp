@@ -60,7 +60,7 @@ int readPersons(vector<Person *> & myCardholders)
 	}
 	return 0;
 }
-void readRentals(vector<Book *> & myBooks, vector<Person *> myCardholders)
+/*void readRentals(vector<Book *> & myBooks, vector<Person *> myCardholders)
 {
 	ifstream rentalFile;
 	long bookID
@@ -74,7 +74,6 @@ void readRentals(vector<Book *> & myBooks, vector<Person *> myCardholders)
 	}
 	return;
 }
-/*
 void openCard(vector<Person *> & myCardholders, int nextID) {
 	return;
 }
