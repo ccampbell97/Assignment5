@@ -30,9 +30,9 @@ int Book::getId()
 void Book::setPersonPtr(Person * ptr)
 {
 	personPtr = ptr;
-} // complete
+}
 
 Person * Book::getPersonPtr()
 {
-	return personPtr; // complete
+	return personPtr;
 }
