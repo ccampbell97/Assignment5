@@ -22,7 +22,6 @@ void printMenu() {
 	cout << "Please enter a choice: ";
 }
 
-//You are not obligated to use these function declarations - they're just given as examples
 void readBooks(vector<Book *> & myBooks)
 {
 	int id;
@@ -34,14 +33,10 @@ void readBooks(vector<Book *> & myBooks)
 		if(bookFile.eof() == true)
 			return;
 		bookFile >> id;
-		//cout << id << endl;
-		getline(bookFile, title); //used to get rid of the new line after the id line
 		getline(bookFile, title);
-		//cout << title << endl;
+		getline(bookFile, title);
 		getline(bookFile, author);
-		//cout << author << endl;
 		getline(bookFile, category);
-		//cout << category << endl;
 		myBooks.push_back(new Book(id, title, author, category));
 	}
 	return;
@@ -58,26 +53,31 @@ int readPersons(vector<Person *> & myCardholders)
 		if (personFile.eof() == true)
 			return 0;
 		personFile >> cardNo;
-		//cout << id << endl;
 		personFile >> act;
-		//cout << active << endl;
 		personFile >> fName;
-		//cout << fName << endl;
 		personFile >> lName;
-		//cout << lName << endl;
 		myCardholders.push_back(new Person(cardNo, act, fName, lName));
 	}
 	return 0;
 }
-/*
-void readRentals(vector<Book *> & myBooks, vector<Person *> myCardholders) {
+void readRentals(vector<Book *> & myBooks, vector<Person *> myCardholders)
+{
+	ifstream rentalFile;
+	long bookID
+	rentalFile.open("rentals.txt");
+	while (rentalFile)
+	{
+		if (rentalFile.eof() == true)
+			return;
+		rentalFile >> BookID;
+		
+	}
 	return;
 }
-
+/*
 void openCard(vector<Person *> & myCardholders, int nextID) {
 	return;
 }
-
 Book * searchBook(vector<Book *> myBooks, int id) {
 	return nullptr;
 }
@@ -88,19 +88,20 @@ int main()
 	vector<Book *> books;
 	vector<Person *> cardholders;
 	int cardID, bookID, i, j;
-	bool outRentals = false;
-	string cardholder;
+	string fullName, fName, lName;
+	string input;
+	ofstream bookFile;
+	ofstream personFile;
+	bool outRentals = false, cardHold = false;
 	readBooks(books);
-	//cout << books[0]->getId() << endl;
 	readPersons(cardholders);
 
 	int choice;
 	do
 	{
-		// If you use cin anywhere, don't forget that you have to handle the <ENTER> key that
-		// the user pressed when entering a menu option. This is still in the input stream.
 		printMenu();
 		cin >> choice;
+		cout << endl;
 		switch (choice)
 		{
 		case 1:
@@ -192,17 +193,17 @@ int main()
 
 		case 5:
 			cout << "Please enter the card ID: ";
-			cin >> cardholder;
+			cin >> cardID;
 			for (j = 0; j < cardholders.size(); j++)
 			{
-				if(cardholders->getId() == cardholder)
-					cout << "Cardholder: " << cardholders->fullName() << endl << endl;
+				if(cardholders[j]->getId() == cardID)
+					cout << "Cardholder: " << cardholders[j]->fullName() << endl << endl;
 			}
 			for(i = 0; i < books.size(); i++)
 			{
 				if(books[i]->getPersonPtr() != 0)
 				{
-					if(books[i]->getPersonPtr()->getId() == cardholder)
+					if(books[i]->getPersonPtr()->getId() == cardID)
 					{
 						cout << "Book ID: " << books[i]->getId() << endl;
 						cout << "Title: " << books[i]->getTitle() << endl;
@@ -217,15 +218,69 @@ int main()
 			break;
 
 		case 6:
-			// Open new library card
+			cout << "Please enter the first name: ";
+			cin >> fName;
+			cout << "Please enter the last name: ";
+			cin >> lName;
+			fullName = fName + " " + lName;
+			for (i = 0; i < cardholders.size(); i++)
+			{
+				if (cardholders[i]->fullName() == fullName)
+				{
+					cardholders[i]-> setActive(true);
+					cout << "Card ID " << cardholders[i]->getId() << " is active" << endl;
+					cout << "Cardholder: " << cardholders[i]->fullName() << endl;
+					cardHold = true;
+					break;
+				}
+			}
+			if (cardHold == false)
+				{
+					cardholders.push_back(new Person(cardholders[i - 1]->getId() + 1, true, fName, lName));
+					cout << "Card ID " << cardholders[i]->getId() << " is active" << endl;
+					cout << "Cardholder: " << cardholders[i]->fullName() << endl;
+				}
+			cardHold = false;
 			break;
 
 		case 7:
-			// Close library card
+			cout << "Please enter the card ID: ";
+			cin >> cardID;
+			for (i = 0; i < cardholders.size(); i++)
+			{
+				if(cardholders[i]->getId() == cardID)
+				{
+					cout << "Cardholder: " << cardholders[i]->fullName() << endl;
+					if(cardholders[i]->isActive() == true)
+					{
+						cout << "Are you sure you want to deactivate your card (y/n)? ";
+						cin >> input;
+						if(input == "y")
+						{
+							cardholders[i]->setActive(false);
+							cout << "Card ID deactivated" << endl;
+						}
+					}
+					else
+						cout << "Card ID is already active" << endl;
+					cardHold = true;
+					break;
+				}
+			}
+			if (cardHold == false)
+				cout << "Card ID not found" << endl;
+			cardHold = false;
 			break;
 
 		case 8:
-			// Must update records in files here before exiting the program
+			personFile.open("person.txt");
+			for(i = 0; i < cardholders.size(); i++)
+			{
+				personFile << cardholders[i]->getId() << " ";
+				personFile << cardholders[i]->isActive() << " ";
+				personFile << cardholders[i]->fullName() << endl;
+			}
+			personFile.close();
 			break;
 
 		default:
