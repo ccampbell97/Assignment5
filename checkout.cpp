@@ -4,7 +4,6 @@
 #include <fstream>
 #include <string>
 #include <vector>
-//#include "person.cpp"
 #include "book.h"
 
 using namespace std;
@@ -48,39 +47,103 @@ int readPersons(vector<Person *> & myCardholders)
 	string fName, lName;
 	ifstream personFile;
 	personFile.open("person.txt");
+	personFile >> cardNo;
 	while (personFile)
 	{
 		if (personFile.eof() == true)
 			return 0;
-		personFile >> cardNo;
 		personFile >> act;
 		personFile >> fName;
 		personFile >> lName;
 		myCardholders.push_back(new Person(cardNo, act, fName, lName));
+		personFile >> cardNo;
 	}
 	return 0;
 }
-/*void readRentals(vector<Book *> & myBooks, vector<Person *> myCardholders)
+
+void readRentals(vector<Book *> & myBooks, vector<Person *> myCardholders)
 {
 	ifstream rentalFile;
-	long bookID
+	int bookID, cardID, i, j;
 	rentalFile.open("rentals.txt");
 	while (rentalFile)
 	{
 		if (rentalFile.eof() == true)
 			return;
-		rentalFile >> BookID;
-		
+		rentalFile >> bookID;
+		rentalFile >> cardID;
+		for (i = 0; i < myBooks.size(); i++)
+		{
+			if(bookID == myBooks[i]->getId())
+			{
+				for (j = 0; j < myCardholders.size(); j++)
+				{
+					if(cardID == myCardholders[j]->getId())
+					{
+						myBooks[i]->setPersonPtr(myCardholders[j]);
+						break;
+					}
+				}
+				break;
+			}
+		}
 	}
 	return;
 }
-void openCard(vector<Person *> & myCardholders, int nextID) {
+void openCard(vector<Person *> & myCardholders, string fName, string lName)
+{
+	bool cardHold;
+	int i;
+	string fullName = fName + " " + lName;
+	for (i = 0; i < myCardholders.size(); i++)
+	{
+		if (myCardholders[i]->fullName() == fullName)
+		{
+			myCardholders[i]-> setActive(true);
+			cout << "Card ID " << myCardholders[i]->getId() << " is active" << endl;
+			cout << "Cardholder: " << myCardholders[i]->fullName() << endl;
+			cardHold = true;
+			break;
+		}
+	}
+	if (cardHold == false)
+		{
+			myCardholders.push_back(new Person(myCardholders[i - 1]->getId() + 1, true, fName, lName));
+			cout << "Card ID " << myCardholders[i]->getId() << " is active" << endl;
+			cout << "Cardholder: " << myCardholders[i]->fullName() << endl;
+		}
 	return;
 }
-Book * searchBook(vector<Book *> myBooks, int id) {
-	return nullptr;
+
+void writePerson(vector<Person *> &myCardholders)
+{
+	int i;
+	ofstream personFile;
+	personFile.open("person.txt");
+	for(i = 0; i < myCardholders.size(); i++)
+	{
+		personFile << myCardholders[i]->getId() << " ";
+		personFile << myCardholders[i]->isActive() << " ";
+		personFile << myCardholders[i]->fullName() << endl;
+	}
+	personFile.close();
 }
-*/
+
+void writeRental(vector<Book *> &myBooks)
+{
+	int i;
+	ofstream rentalFile;
+	rentalFile.open("rentals.txt");
+	for(i = 0; i < myBooks.size(); i++)
+	{
+		if (myBooks[i]->getPersonPtr() != nullptr)
+		{
+			rentalFile << myBooks[i]->getId() << " ";
+			rentalFile << myBooks[i]->getPersonPtr()->getId() << endl;
+		}
+	}
+	rentalFile.close();
+}
 
 int main()
 {
@@ -89,11 +152,10 @@ int main()
 	int cardID, bookID, i, j;
 	string fullName, fName, lName;
 	string input;
-	ofstream bookFile;
-	ofstream personFile;
 	bool outRentals = false, cardHold = false;
 	readBooks(books);
 	readPersons(cardholders);
+	readRentals(books,cardholders);
 
 	int choice;
 	do
@@ -147,11 +209,13 @@ int main()
 					cout << "Title: " << books[i]->getTitle();
 					cout << "Return Completed" << endl;
 					books[i]->setPersonPtr(nullptr);
+					outRentals = true;
 					break;
 				}
-				else
-					cout << "Book ID not found" << endl;
 			}
+			if(outRentals == false)
+				cout << "Book ID not found" << endl;
+			outRentals = false;
 			break;
 
 		case 3:
@@ -221,25 +285,7 @@ int main()
 			cin >> fName;
 			cout << "Please enter the last name: ";
 			cin >> lName;
-			fullName = fName + " " + lName;
-			for (i = 0; i < cardholders.size(); i++)
-			{
-				if (cardholders[i]->fullName() == fullName)
-				{
-					cardholders[i]-> setActive(true);
-					cout << "Card ID " << cardholders[i]->getId() << " is active" << endl;
-					cout << "Cardholder: " << cardholders[i]->fullName() << endl;
-					cardHold = true;
-					break;
-				}
-			}
-			if (cardHold == false)
-				{
-					cardholders.push_back(new Person(cardholders[i - 1]->getId() + 1, true, fName, lName));
-					cout << "Card ID " << cardholders[i]->getId() << " is active" << endl;
-					cout << "Cardholder: " << cardholders[i]->fullName() << endl;
-				}
-			cardHold = false;
+			openCard(cardholders, fName, lName);
 			break;
 
 		case 7:
@@ -272,14 +318,8 @@ int main()
 			break;
 
 		case 8:
-			personFile.open("person.txt");
-			for(i = 0; i < cardholders.size(); i++)
-			{
-				personFile << cardholders[i]->getId() << " ";
-				personFile << cardholders[i]->isActive() << " ";
-				personFile << cardholders[i]->fullName() << endl;
-			}
-			personFile.close();
+			writePerson(cardholders);
+			writeRental(books);
 			break;
 
 		default:
